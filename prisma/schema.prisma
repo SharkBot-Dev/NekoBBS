@@ -1,0 +1,33 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Author {
+  id   Int    @id @default(autoincrement())
+  authorName String
+  authorId String @unique
+  discordUserId String @unique
+  discordUserName String
+  clientIp String
+}
+
+model Post {
+  id   Int    @id @default(autoincrement())
+  content String
+  authorId String
+}
+
+model Threads {
+  id   Int    @id @default(autoincrement())
+  title String
+}
