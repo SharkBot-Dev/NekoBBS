@@ -1,0 +1,78 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <title><%= title %></title>
+</head>
+<body>
+    <h1><%= title %> - BBSホームへようこそ！</h1>
+    <h3 id="username"></h3>
+
+    <button id="logout">ログアウト</button>
+
+    <div id="threads"></div>
+
+    <script>
+        async function loadUser() {
+            const response = await fetch("/api/users/me");
+
+            if (!response.ok) {
+                location.href = "/";
+                return;
+            }
+
+            const data = await response.json();
+
+            document.getElementById("username")
+                .textContent = data.user.name + "さん、よろしく！";
+
+            // document.getElementById("discordId")
+            //     .textContent =
+            //         "Discord ID: " + (data.discord?.id ?? "未連携");
+
+            // if (data.user.image) {
+            //     document.getElementById("avatar").src =
+            //         data.user.image;
+            // }
+        }
+
+        async function loadThreads() {
+            const response = await fetch("/api/threads/list");
+
+            if (!response.ok) {
+                alert("スレッドが読み込めませんでした。")
+                return;
+            }
+
+            const data = await response.json();
+
+            if (data.threads) {
+                const threads = document.getElementById("threads");
+
+                let threadsText = ""
+                for (const t of data.threads) {
+                    threadsText += `<a href='/bbs/threads?t=${t.id}'>${t.title}</a><br/>`
+                }
+
+                threads.innerHTML = threadsText
+            }
+        }
+
+        document.getElementById("logout")
+            .addEventListener("click", async () => {
+                const response = await fetch(
+                    "/api/auth/sign-out",
+                    { method: "POST" }
+                );
+
+                if (response.ok) {
+                    location.href = "/";
+                }
+            });
+
+        loadUser();
+    </script>
+</body>
+</html>
