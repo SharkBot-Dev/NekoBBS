@@ -9,12 +9,13 @@
 </head>
 <body>
     <h1><%= threadName %></h1>
+    <p id="description">...</p>
 
     <a href="/bbs">←戻る</a><br/>
     
     <div id="posts"></div>
 
-    <div class="threadBox">
+    <div class="threadBox" id="createPost">
         <h5 id="username"></h5>
         <textarea id="content" placeholder="投稿内容" class="content"></textarea><br/>
         <button id="post">投稿する</button>
@@ -71,6 +72,17 @@
 
                 posts.innerHTML = postsText
             }
+
+            if (data.count) {
+                const description = document.getElementById("description");
+
+                if (data.count >= 1000) {
+                    description.textContent = "これ以上は書き込めません！新しいスレッドを作ろう！"
+                    document.getElementById("createPost").style.display = 'none';
+                } else {
+                    description.textContent = "投稿数: " + String(data.count)
+                }
+            } 
         }
 
         document.getElementById("post")

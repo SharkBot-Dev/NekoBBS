@@ -90,3 +90,16 @@ model Posts {
   threadId String
   content String
 }
+
+model MuteUsers {
+  id Int @id @default(autoincrement())
+  createdAt  DateTime @default(now())
+  userId String
+  reason String
+}
+
+model AdminUsers {
+  id Int @id @default(autoincrement())
+  createdAt  DateTime @default(now())
+  userId String
+}

@@ -69,10 +69,10 @@ router.get('/list', async (req, res) => {
 
     count += 1;
   }
-  
 
   res.json({
-    posts: resList
+    posts: resList,
+    count: resList.length
   })
 });
 
@@ -85,6 +85,18 @@ router.post('/create', async (req, res) => {
     return res.status(401).json({
         error: "ログインしていません",
     });
+  }
+
+  const muteUser = await prisma.muteUsers.findFirst({
+    where: {
+      userId: session.user.id
+    }
+  })
+  if (muteUser) {
+    res.status(403).json({
+      status: "error",
+      reason: "あなたはミュートされています。"
+    })
   }
 
   // console.log(req.body)
@@ -103,6 +115,19 @@ router.post('/create', async (req, res) => {
     return res.status(400).json({
         error: "不正なリクエスト",
     });
+  }
+
+  const postsCount = await prisma.posts.count({
+    where: {
+      threadId: threadId,
+    }
+  });
+  if (postsCount >= 1000) {
+    res.json({
+      status: "error",
+      error: "1000件以上は書き込めません。\n新しいスレッドを作成しよう！"
+    })
+    return
   }
 
   await prisma.posts.create({
