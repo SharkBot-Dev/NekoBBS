@@ -5,14 +5,9 @@ import { prisma } from "./../lib/prisma.js"
 import { auth } from "./../lib/auth.js";
 import createId from "./../lib/createId.js"
 import { fromNodeHeaders } from "better-auth/node";
+import escapeHtml from "escape-html";
 
 const router = express.Router();
-
-// router.get('/', (req, res) => {
-//   res.render('index', {
-//     title: title,
-//   });
-// });
 
 router.get('/list', async (req, res) => {
   const threads = await prisma.threads.findMany({
@@ -25,7 +20,7 @@ router.get('/list', async (req, res) => {
   const resList = [];
   for (const thread of threads) {
     resList.push({
-        title: thread.title,
+        title: escapeHtml(thread.title),
         id: thread.threadId
     })
   }
@@ -36,7 +31,7 @@ router.get('/list', async (req, res) => {
   })
 });
 
-router.get('/create', async (req, res) => {
+router.post('/create', async (req, res) => {
   const session = await auth.api.getSession({
     headers: fromNodeHeaders(req.headers),
   });
@@ -57,7 +52,7 @@ router.get('/create', async (req, res) => {
   const threadId = createId();
   await prisma.threads.create({
     data: {
-        title: title,
+        title: escapeHtml(title),
         threadId: threadId,
         ownerId: session.user.id,
     }

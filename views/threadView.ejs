@@ -4,15 +4,21 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="UTF-8">
+    <link rel="stylesheet" href="/css/style.css">
     <title><%= title %></title>
 </head>
 <body>
-    <h1><%= title %> - BBSホームへようこそ！</h1>
-    <h3 id="username"></h3>
+    <h1><%= threadName %></h1>
 
-    <button id="logout">ログアウト</button>
+    <a href="/bbs">←戻る</a><br/>
+    
+    <div id="posts"></div>
 
-    <div id="threads"></div>
+    <div class="threadBox">
+        <h5 id="username"></h5>
+        <textarea id="content" placeholder="投稿内容" class="content"></textarea><br/>
+        <button id="post">投稿する</button>
+    </div>
 
     <script>
         async function loadUser() {
@@ -26,7 +32,7 @@
             const data = await response.json();
 
             document.getElementById("username")
-                .textContent = data.user.name + "さん、よろしく！";
+                .textContent = data.user.name + "として投稿します。";
 
             // document.getElementById("discordId")
             //     .textContent =
@@ -38,41 +44,73 @@
             // }
         }
 
-        async function loadThreads() {
-            const response = await fetch("/api/threads/list");
+        async function loadPosts() {
+            const url = new URL(location.href)
+            const urlParams = new URLSearchParams(url.search);
+            if (!urlParams.get('t')) {
+                alert("レスが読み込めませんでした。")
+                return;
+            }
+
+            const response = await fetch("/api/posts/list?t=" + urlParams.get('t'));
 
             if (!response.ok) {
-                alert("スレッドが読み込めませんでした。")
+                alert("レスが読み込めませんでした。")
                 return;
             }
 
             const data = await response.json();
 
-            if (data.threads) {
-                const threads = document.getElementById("threads");
+            if (data.posts) {
+                const posts = document.getElementById("posts");
 
-                let threadsText = ""
-                for (const t of data.threads) {
-                    threadsText += `<a href='/bbs/threads?t=${t.id}'>${t.title}</a><br/>`
+                let postsText = ""
+                for (const p of data.posts) {
+                    postsText += `<div class="post"><div class="author">${p.count}. ${p.authorName} (${p.authorId})</div><br>${p.content}</div><br/>`
                 }
 
-                threads.innerHTML = threadsText
+                posts.innerHTML = postsText
             }
         }
 
-        document.getElementById("logout")
+        document.getElementById("post")
             .addEventListener("click", async () => {
+                const url = new URL(location.href)
+                const urlParams = new URLSearchParams(url.search);
+                if (!urlParams.get('t')) {
+                    alert("レスが読み込めませんでした。")
+                    return;
+                }
+
+                const content = document.getElementById("content").value;
+                if (!content) {
+                    alert("スレッド名を指定する必要があります。")
+                    return
+                }
+                
                 const response = await fetch(
-                    "/api/auth/sign-out",
-                    { method: "POST" }
+                    "/api/posts/create",
+                    { 
+                        method: "POST", 
+                        body: JSON.stringify({
+                            content: content,
+                            threadId: urlParams.get('t')
+                        }),
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    }
                 );
 
                 if (response.ok) {
-                    location.href = "/";
+                    location.reload();
+                } else {
+                    alert("投稿失敗！")
                 }
             });
 
         loadUser();
+        loadPosts();
     </script>
 </body>
 </html>

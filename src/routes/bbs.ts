@@ -19,7 +19,7 @@ router.get('/', (req, res) => {
 });
 
 router.get('/threads', async (req, res) => {
-  const threadId = (req.params as any).t;
+  const threadId = (req.query as any).t;
 
   const thread = await prisma.threads.findFirst({
     where: {
@@ -34,7 +34,8 @@ router.get('/threads', async (req, res) => {
 
   res.render('threadView', {
     title: title + `- ${thread?.title}`,
-    threadId: threadId
+    threadId: threadId,
+    threadName: thread.title
   });
 });
 

@@ -9,6 +9,7 @@ import { title } from "./data/bbs.js"
 import bbs from "./routes/bbs.js";
 import user from "./routes/user.js";
 import threads from "./routes/threads.js";
+import posts from "./routes/posts.js";
 
 config();
 
@@ -20,6 +21,9 @@ app.use(express.json());
 app.use('/bbs', bbs);
 app.use('/api/users', user);
 app.use('/api/threads', threads);
+app.use('/api/posts', posts);
+
+app.use(express.static('public'));
 
 app.all("/api/auth/*splat", toNodeHandler(auth));
 

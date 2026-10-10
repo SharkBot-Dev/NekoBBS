@@ -1,0 +1,29 @@
+body {
+    background-color: rgb(212, 212, 212);
+}
+
+.post {
+    background-color: gray;
+    color: white;
+    padding: 10px;
+}
+
+.post .author {
+    color: aqua;
+}
+
+.threadBox {
+    background-color: gray;
+    color: white;
+    padding: 20px;
+}
+
+.threadBox h5 {
+    padding: 0px;
+    margin: 0px;
+}
+
+.threadBox .content {
+    width: 200px;
+    height: 50px;
+}
