@@ -1,15 +1,24 @@
 import express from "express"
 // import { config } from "dotenv"
 
-import { prisma } from "./../lib/prisma.js"
-import { auth } from "./../lib/auth.js";
-import createId from "./../lib/createId.js"
+import { prisma } from "./../../lib/prisma.js"
+import { auth } from "./../../lib/auth.js";
+import createId from "./../../lib/createId.js"
 import { fromNodeHeaders } from "better-auth/node";
 import escapeHtml from "escape-html";
 
 const router = express.Router();
 
 router.get('/list', async (req, res) => {
+  const checkFirst = await prisma.threads.findFirst()
+  console.log(checkFirst)
+  if (!checkFirst) {
+    res.json({
+      threads: []
+    })
+    return
+  }
+
   const threads = await prisma.threads.findMany({
     take: 30,
     orderBy: {

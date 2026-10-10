@@ -6,7 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "postinstall": "prisma skills sync || exit 0",
-    "start": "node dist/index.js"
+    "start": "node dist/index.js",
+    "build": "tsc",
+    "build_docker": "npx tsc"
   },
   "repository": {
     "type": "git",
@@ -34,6 +36,7 @@
     "@types/escape-html": "^1.0.4",
     "@types/express": "^5.0.6",
     "@types/node": "^26.6.4",
-    "prisma": "^7.10.0"
+    "prisma": "^7.10.0",
+    "typescript": "^7.0.2"
   }
 }

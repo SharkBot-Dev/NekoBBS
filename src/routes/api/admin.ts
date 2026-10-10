@@ -1,9 +1,9 @@
 import express from "express"
 // import { config } from "dotenv"
 
-import { title } from "./../data/bbs.js"
-import { prisma } from "../lib/prisma.js";
-import { auth } from "../lib/auth.js";
+// import { title } from "./../../data/bbs.js"
+import { prisma } from "../../lib/prisma.js";
+import { auth } from "../../lib/auth.js";
 import { fromNodeHeaders } from "better-auth/node";
 
 const router = express.Router();

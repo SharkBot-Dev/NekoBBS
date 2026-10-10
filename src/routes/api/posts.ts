@@ -1,8 +1,8 @@
 import express from "express"
 // import { config } from "dotenv"
 
-import { prisma } from "./../lib/prisma.js"
-import { auth } from "./../lib/auth.js";
+import { prisma } from "./../../lib/prisma.js"
+import { auth } from "./../../lib/auth.js";
 
 import { fromNodeHeaders } from "better-auth/node";
 
@@ -24,6 +24,15 @@ router.get('/list', async (req, res) => {
     return res.status(400).json({
         error: "不正なリクエスト",
     });
+  }
+
+  const firstCheck = await prisma.posts.findFirst()
+  if (!firstCheck) {
+    res.json({
+      posts: [],
+      count: 0
+    })
+    return
   }
 
   const posts = await prisma.posts.findMany({

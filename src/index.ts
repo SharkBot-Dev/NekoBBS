@@ -1,18 +1,18 @@
 import express from "express"
 import { config } from "dotenv"
 
+config();
+
 import { toNodeHandler } from "better-auth/node";
 import { auth } from "./lib/auth.js";
 
 import { title } from "./data/bbs.js"
 
 import bbs from "./routes/bbs.js";
-import user from "./routes/user.js";
-import threads from "./routes/threads.js";
-import posts from "./routes/posts.js";
-import admins from "./routes/admin.js";
-
-config();
+import user from "./routes/api/user.js";
+import threads from "./routes/api/threads.js";
+import posts from "./routes/api/posts.js";
+import admins from "./routes/api/admin.js";
 
 const app = express();
 const port = process.env.PORT;

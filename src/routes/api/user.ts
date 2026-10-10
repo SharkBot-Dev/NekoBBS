@@ -3,8 +3,8 @@ import express from "express"
 
 import { fromNodeHeaders } from "better-auth/node";
 
-import { auth } from "../lib/auth.js";
-import { prisma } from "../lib/prisma.js";
+import { auth } from "../../lib/auth.js";
+import { prisma } from "../../lib/prisma.js";
 
 const router = express.Router();
 
