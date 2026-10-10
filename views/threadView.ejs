@@ -123,6 +123,10 @@
 
         loadUser();
         loadPosts();
+
+        setInterval(() => {
+            loadPosts();
+        }, 5000)
     </script>
 </body>
 </html>

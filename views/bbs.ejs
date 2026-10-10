@@ -12,7 +12,9 @@
 
     <div class="threadBox">
         <h3 id="username"></h3>
-        <button id="logout">ログアウト</button>
+        <div class="container" id="loginButtons">
+            <button id="logout">ログアウト</button>
+        </div>
     </div>
 
     <h3>スレッドを作る</h3>
@@ -40,6 +42,17 @@
 
             document.getElementById("username")
                 .textContent = data.user.name + "さん、よろしく！";
+
+            if (data.user.admin) {
+                const adminMuteButton = document.createElement("button");
+                adminMuteButton.textContent = "管理パネル"
+                
+                adminMuteButton.addEventListener("click", () => {
+                    location.href = "/bbs/admin/mute"
+                })
+
+                document.getElementById("loginButtons").appendChild(adminMuteButton)
+            }
 
             // document.getElementById("discordId")
             //     .textContent =

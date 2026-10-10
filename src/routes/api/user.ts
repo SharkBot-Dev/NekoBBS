@@ -30,12 +30,19 @@ router.get("/me", async (req, res) => {
             },
         });
 
+        const admin = await prisma.adminUsers.findFirst({
+            where: {
+                userId: session.user.id
+            }
+        })
+
         res.json({
             user: {
                 id: session.user.id,
                 name: session.user.name,
                 email: session.user.email,
                 image: session.user.image,
+                admin: admin ? true : false
             },
             discord: account ? {
                 id: account.accountId,
