@@ -30,11 +30,19 @@ router.get("/me", async (req, res) => {
             },
         });
 
+        let isAdmin = false;
         const admin = await prisma.adminUsers.findFirst({
             where: {
                 userId: session.user.id
             }
         })
+        if (!admin) {
+            if (process.env.ADMIN_DISCORD_USER_ID == account?.accountId) {
+                isAdmin = true
+            }
+        } else {
+            isAdmin = true
+        }
 
         res.json({
             user: {
@@ -42,7 +50,7 @@ router.get("/me", async (req, res) => {
                 name: session.user.name,
                 email: session.user.email,
                 image: session.user.image,
-                admin: admin ? true : false
+                admin: isAdmin
             },
             discord: account ? {
                 id: account.accountId,

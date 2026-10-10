@@ -11,7 +11,7 @@ const router = express.Router();
 
 router.get('/list', async (req, res) => {
   const checkFirst = await prisma.threads.findFirst()
-  console.log(checkFirst)
+  // console.log(checkFirst)
   if (!checkFirst) {
     res.json({
       threads: []
