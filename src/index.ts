@@ -10,6 +10,7 @@ import bbs from "./routes/bbs.js";
 import user from "./routes/user.js";
 import threads from "./routes/threads.js";
 import posts from "./routes/posts.js";
+import admins from "./routes/admin.js";
 
 config();
 
@@ -22,6 +23,7 @@ app.use('/bbs', bbs);
 app.use('/api/users', user);
 app.use('/api/threads', threads);
 app.use('/api/posts', posts);
+app.use('/api/admin', admins);
 
 app.use(express.static('public'));
 

@@ -72,4 +72,112 @@ router.post('/user/mute', async (req, res) => {
   })
 });
 
+router.delete('/user/mute', async (req, res) => {
+  const session = await auth.api.getSession({
+    headers: fromNodeHeaders(req.headers),
+  });
+
+  if (!session) {
+    return res.status(401).json({
+        error: "ログインしていません",
+    });
+  }
+
+  const admin = await prisma.adminUsers.findFirst({
+    where: {
+        userId: session.user.id
+    }
+  })
+  if (!admin) {
+    const account = await prisma.account.findFirst({
+        where: {
+            userId: session.user.id,
+            providerId: "discord",
+        },
+        select: {
+            accountId: true,
+        },
+    });
+
+    if (process.env.ADMIN_DISCORD_USER_ID != account?.accountId) {
+        return res.status(403).json({
+            error: "権限がありません。",
+        });
+    }
+  }
+
+  // console.log(req.body)
+
+  const query = req.query;
+
+  const authorId = query.authorId;
+  if (!authorId) {
+    return res.status(400).json({
+        error: "投稿者を指定する必要があります。",
+    });
+  }
+
+  await prisma.muteUsers.deleteMany({
+    where: {
+        userId: authorId as string,
+    }
+  })
+
+  res.json({
+    status: "ok",
+  })
+});
+
+router.get('/user/mutes', async (req, res) => {
+  const session = await auth.api.getSession({
+    headers: fromNodeHeaders(req.headers),
+  });
+
+  if (!session) {
+    return res.status(401).json({
+        error: "ログインしていません",
+    });
+  }
+
+  const admin = await prisma.adminUsers.findFirst({
+    where: {
+        userId: session.user.id
+    }
+  })
+  if (!admin) {
+    const account = await prisma.account.findFirst({
+        where: {
+            userId: session.user.id,
+            providerId: "discord",
+        },
+        select: {
+            accountId: true,
+        },
+    });
+
+    if (process.env.ADMIN_DISCORD_USER_ID != account?.accountId) {
+        return res.status(403).json({
+            error: "権限がありません。",
+        });
+    }
+  }
+
+  // console.log(req.body)
+
+  const muteUsers = await prisma.muteUsers.findMany()
+
+  const mutes = [];
+  for (const muteUser of muteUsers) {
+    mutes.push({
+        userId: muteUser.userId,
+        reason: muteUser.reason
+    })
+  }
+
+  res.json({
+    status: "ok",
+    mutes: mutes
+  })
+});
+
 export default router

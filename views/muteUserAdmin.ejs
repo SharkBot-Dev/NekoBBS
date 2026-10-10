@@ -1,0 +1,97 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/css/style.css">
+    <title><%= title %></title>
+</head>
+<body>
+    <h1>ユーザーのミュート</h1>
+
+    <a href="/bbs">←戻る</a><br/>
+
+    <h3>ミュートをする</h3>
+    <div class="threadBox" id="createPost">
+        <input id="muteUserId" placeholder="ミュートするユーザーid"><br/>
+        <input id="muteReason" placeholder="ミュートする理由"><br/>
+        <button id="mute">ミュートする</button>
+    </div>
+
+    <h3>ミュートされたユーザー一覧</h3>
+    <div class="threadBox">
+        <h5>ユーザー名をクリックしミュートを解除できます。</h5>
+        <div id="muteUsers"></div>
+    </div>
+    
+    <script>
+        async function loadUser() {
+            const response = await fetch("/api/users/me");
+
+            if (!response.ok) {
+                location.href = "/";
+                return;
+            }
+        }
+
+        async function loadMuteUsers() {
+            const response = await fetch("/api/admin/user/mutes");
+
+            if (!response.ok) {
+                alert("ミュートユーザーのロードに失敗！")
+                return;
+            }
+
+            let muteText = ""
+            const muteJson = await response.json();
+            for (const muteUser of muteJson.mutes) {
+                muteText += `<a href="http://localhost:3000/bbs/admin/delete-mute?authorId=${muteUser.userId}">${muteUser.userId} (${muteUser.reason})</a><br/>`
+            }
+
+            if (!muteText) {
+                muteText = "まだ誰もミュートされていません。"
+            }
+            document.getElementById("muteUsers").innerHTML = muteText
+        }
+
+        document.getElementById("mute")
+            .addEventListener("click", async () => {
+                const muteUserId = document.getElementById("muteUserId").value;
+                const muteReason = document.getElementById("muteReason").value;
+                if (!muteUserId) {
+                    alert("ユーザーidを指定してください。")
+                    return
+                }
+                if (!muteReason) {
+                    alert("理由を指定してください。")
+                    return
+                }
+
+                const response = await fetch(
+                    "/api/admin/user/mute",
+                    { 
+                        method: "POST", 
+                        body: JSON.stringify({
+                            authorId: muteUserId,
+                            reason: muteReason
+                        }),
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    }
+                );
+
+                if (response.ok) {
+                    alert("ミュートしました。")
+                    location.reload();
+                } else {
+                    alert("ミュート失敗！")
+                }
+            });
+
+        loadUser();
+        loadMuteUsers();
+    </script>
+</body>
+</html>
