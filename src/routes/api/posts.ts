@@ -4,6 +4,8 @@ import express from "express"
 import { prisma } from "./../../lib/prisma.js"
 import { auth } from "./../../lib/auth.js";
 
+import { postsTextLimit } from "./../../data/limits.js";
+
 import { fromNodeHeaders } from "better-auth/node";
 
 import escapeHtml from "escape-html";
@@ -119,11 +121,31 @@ router.post('/create', async (req, res) => {
     });
   }
 
+  if (content.length > postsTextLimit) {
+    return res.status(400).json({
+        error: "内容が長過ぎます！",
+    });
+  }
+
   const threadId = json.threadId;
   if (!threadId) {
     return res.status(400).json({
         error: "不正なリクエスト",
     });
+  }
+
+  const threadCheck = await prisma.threads.findFirst({
+    where: {
+      threadId: threadId
+    }
+  })
+
+  if (!threadCheck) {
+    res.json({
+      status: "error",
+      error: "不明なスレッド"
+    })
+    return
   }
 
   const postsCount = await prisma.posts.count({

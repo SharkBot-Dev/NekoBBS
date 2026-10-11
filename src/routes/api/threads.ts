@@ -4,6 +4,7 @@ import express from "express"
 import { prisma } from "./../../lib/prisma.js"
 import { auth } from "./../../lib/auth.js";
 import createId from "./../../lib/createId.js"
+import { threadTitleLimit } from "./../../data/limits.js";
 import { fromNodeHeaders } from "better-auth/node";
 import escapeHtml from "escape-html";
 
@@ -55,6 +56,12 @@ router.post('/create', async (req, res) => {
   if (!title) {
     return res.status(400).json({
         error: "不正なリクエスト",
+    });
+  }
+
+  if (title.length > threadTitleLimit) {
+    return res.status(400).json({
+        error: "タイトルが長過ぎます！",
     });
   }
 
